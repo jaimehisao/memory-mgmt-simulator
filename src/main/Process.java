@@ -6,8 +6,21 @@ public class Process {
 
     int processId;
     int processSize;
-    ArrayList<Page> pageIndex; //Stores the page numbers of where a process is located.
+    ArrayList<Page> pageIndexInPrimaryMemory; //Stores the page numbers of where a process is located (Physical).
+    ArrayList<Page> pageIndexInSwap; //Stores the page numbers of where a process is located (Swap).
     int swapMemoryLocations[];
+
+    public void addToSwapPageIndex(Page page){ pageIndexInSwap.add(page); }
+
+    public void removeFromSwapPageIndex(Page page){ pageIndexInSwap.remove(page); }
+
+    public ArrayList<Page> getPageIndexInSwap() {
+        return pageIndexInSwap;
+    }
+
+    public void setPageIndexInSwap(ArrayList<Page> pageIndexInSwap) {
+        this.pageIndexInSwap = pageIndexInSwap;
+    }
 
     public int getProcessId() {
         return processId;
@@ -25,12 +38,12 @@ public class Process {
         this.processSize = processSize;
     }
 
-    public ArrayList<Page> getPageIndex() {
-        return pageIndex;
+    public ArrayList<Page> getPageIndexInPrimaryMemory() {
+        return pageIndexInPrimaryMemory;
     }
 
-    public void setPageIndex(ArrayList<Page> pageIndex) {
-        this.pageIndex = pageIndex;
+    public void setPageIndexInPrimaryMemory(ArrayList<Page> pageIndexInPrimaryMemory) {
+        this.pageIndexInPrimaryMemory = pageIndexInPrimaryMemory;
     }
 
     public int[] getSwapMemoryLocations() {
@@ -42,17 +55,17 @@ public class Process {
     }
 
     public void removeProcessPageFromMemory(int index) {
-        this.pageIndex.remove(index);
+        this.pageIndexInPrimaryMemory.remove(index);
     }
 
-    public void addPage(Page page){ this.pageIndex.add(page);}
+    public void addPageToPrimaryMemory(Page page){ this.pageIndexInPrimaryMemory.add(page);}
 
-    public void removePage(Page page){ this.pageIndex.remove(page);}
+    public void removePageFromPrimaryMemory(Page page){ this.pageIndexInPrimaryMemory.remove(page);}
 
     public Process(int processId, int processSize){
         this.processId = processId;
         this.processSize = processSize;
-        this.pageIndex = new ArrayList<>();
+        this.pageIndexInPrimaryMemory = new ArrayList<>();
         this.swapMemoryLocations = new int[Commons.SWAP_SIZE/Commons.PAGE_SIZE];
     }
 }

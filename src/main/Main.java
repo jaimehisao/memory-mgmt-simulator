@@ -31,9 +31,18 @@ public class Main {
 
         while(true){
             System.out.println("Choose one of the following options...");
-            char input = scanner.next().charAt(0);
+            char input = 'Z';
+            while(input != 'P' && input != 'A' && input != 'L' && input != 'F'){
+                System.out.println("P -> Assign a process to memory\n" +
+                        "A -> Get a the physical address of a virtual address \n" +
+                        "L -> Free up memory of a given process\n" +
+                        "F -> Exit the simulation");
+                input = scanner.next().charAt(0);
+            }
+
             if(input == 'P'){
                 //Assign X amount of bytes to process Z
+                System.out.println("Syntax: Process Size and PID (534 5838 assigns 534 bytes to PID 5838)");
                 int size = scanner.nextInt();
                 int processID = scanner.nextInt();
                 simulation.createProcess(processID, size);
@@ -41,16 +50,24 @@ public class Main {
 
             if(input == 'A'){
                 //Obtain physical address that corresponds to X virtual address of process Z
+                System.out.println("Syntax: Virtual ID, PID, M\n" +
+                        "If M is 0 only the address is returned, if it is 1 it also modifies the address.");
+                int processID = scanner.nextInt();
+                int addr = scanner.nextInt();
+                System.out.println("The physical address for virtual address " + addr + " from process " + processID +
+                        " is " + simulation.returnPhysicalAddress(addr, processID));
             }
 
             if(input == 'L'){
                 //Free page frames occupied by process X
+                int processID = scanner.nextInt();
+                System.out.println("Deleted " + simulation.freeProcessFromMemory(processID) + " frames from PID " + processID);
             }
 
             if(input == 'F'){
                 return;
             }
-            simulation.viewSimulation();
+            simulation.viewSimulation(); //this is debug output, not prod level
         }
 
 

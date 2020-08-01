@@ -5,17 +5,46 @@ import java.awt.*;
 public class Page {
 
     int num;
-    int pid;
+    Process process;
+    int locationInMemory;
+    int locationInSwap;
     int lastAppearance;
+    int timeInserted;
     int timesUsed;
     boolean inserted;
 
-     public Page(int num, int pid){
+     public Page(int num, Process process){
         this.num = num;
-        this.pid = pid;
+        this.locationInMemory = 0;
+        this.locationInSwap = 0;
         this.inserted = true;
         this.lastAppearance = -1;
         this.timesUsed = 0;
+        this.process = process;
+    }
+
+    public int getLocationInSwap() {
+        return locationInSwap;
+    }
+
+    public void setLocationInSwap(int locationInSwap) {
+        this.locationInSwap = locationInSwap;
+    }
+
+    public int getTimeInserted() {
+        return timeInserted;
+    }
+
+    public void setTimeInserted(int timeInserted) {
+        this.timeInserted = timeInserted;
+    }
+
+    public int getLocationInMemory() {
+        return locationInMemory;
+    }
+
+    public void setLocationInMemory(int locationInMemory) {
+        this.locationInMemory = locationInMemory;
     }
 
     public int getLastAppearance() {
@@ -50,5 +79,5 @@ public class Page {
         this.num = num;
     }
 
-    public int getPid(){ return pid; }
+    public Process getProcess(){ return process; }
 }

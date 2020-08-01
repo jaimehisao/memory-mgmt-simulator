@@ -29,6 +29,10 @@ public class Simulation {
         this.type = type;
     }
 
+    /* ***********************
+     *     Public Methods    *
+     *************************/
+
     /**
      * Creates a process, then assigns memory to it.
      * @param processID the ID of the process
@@ -46,6 +50,10 @@ public class Simulation {
     }
 
 
+    /**
+     * Assigns memory to a new process as a whole.
+     * @param process New Process that needs memory assignment.
+     */
     private void assignMemoryToNewProcess(Process process){
         int pagesRequired = (int)Math.ceil(process.getProcessSize()/Commons.PAGE_SIZE);
         if(pagesRequired > pagesAvailable){
@@ -57,8 +65,8 @@ public class Simulation {
         int pagesAssignedToProcess = 0;
         while(pagesRequired > pagesAssignedToProcess){
             Page page = new Page(pagesAssignedToProcess+1, process);
-            assignPageToMemory(process, page);
-            process.addPage(page); //Store information in PCB (associate to process)
+            assignPageToPrimaryMemory(process, page);
+            process.addPageToPrimaryMemory(page); //Store information in PCB (associate to process)
             ++pagesAssignedToProcess;
         }
             activeProcesses.add(process);//Store information on active processes
@@ -69,7 +77,7 @@ public class Simulation {
      * @param process Process Object that owns the page
      * @param pageToAssign Page object that needs to be assigned into memory. Be it new or from Swap.
      */
-    private void assignPageToMemory(Process process, Page pageToAssign){
+    private void assignPageToPrimaryMemory(Process process, Page pageToAssign){
         for (int i = 0; i < memory.length; i++){
             if(memory[i] == null){
                 memory[i] = pageToAssign; //Assign the page to memory
@@ -90,6 +98,8 @@ public class Simulation {
                 page.setInserted(false);
                 page.setLocationInSwap(i);
                 page.setLocationInMemory(Integer.MAX_VALUE);
+                page.getProcess().removePageFromPrimaryMemory(page);
+                page.getProcess().addToSwapPageIndex(page);
                 swap[i] = page;
             }
         }
@@ -107,8 +117,8 @@ public class Simulation {
     }
 
     /**
-     * Frees all of the memory of a given PID. Not to be used to remove a certain number of pages, since this process
-     * is desctructive and will erase the whole process from memory.
+     * Frees all of the memory of a given PID. Not to be used to remove a specific number of pages, since this process
+     * is destructive and will erase the whole process from memory.
      * @param processID PID of the process to be removed from memory.
      * @return the number of Page Frames that were deleted.
      */
@@ -141,6 +151,7 @@ public class Simulation {
      */
     public int returnPhysicalAddress(int addr, int processID){
         //TODO check if the given address actually exists.
+        //TODO case when the process is not loaded in memory.
         int pageNumber = addr/Commons.PAGE_SIZE;
         int page = 0;
         for (int i = 0; i < memory.length; i++){
@@ -153,7 +164,7 @@ public class Simulation {
         return 0;
     }
 
-    /* *****************Memory Replacement Methods*******************************/
+    /* ***************** Memory Replacement Methods *******************************/
 
     /**
      * Removes page from memory and saves it to Swap memory.
@@ -206,7 +217,7 @@ public class Simulation {
     private void swapInMemory(int requiredPageNumber){
         for (int i = 0; i < swap.length; i++){
             if(swap[i].getNum() == requiredPageNumber){
-
+                assignPageToPrimaryMemory(swap[i].getProcess(), swap[i]);
             }
         }
     }
