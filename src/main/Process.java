@@ -1,10 +1,12 @@
 package main;
 
+import java.util.ArrayList;
+
 public class Process {
 
     int processId;
     int processSize;
-    int pageIndex[]; //Stores the page numbers of where a process is located.
+    ArrayList<Page> pageIndex; //Stores the page numbers of where a process is located.
     int swapMemoryLocations[];
 
     public int getProcessId() {
@@ -23,11 +25,11 @@ public class Process {
         this.processSize = processSize;
     }
 
-    public int[] getPageIndex() {
+    public ArrayList<Page> getPageIndex() {
         return pageIndex;
     }
 
-    public void setPageIndex(int[] pageIndex) {
+    public void setPageIndex(ArrayList<Page> pageIndex) {
         this.pageIndex = pageIndex;
     }
 
@@ -39,18 +41,18 @@ public class Process {
         this.swapMemoryLocations = swapMemoryLocations;
     }
 
-    public void addProcessPageInMemory(int index, int processID) {
-        this.pageIndex[index] = processID;
+    public void removeProcessPageFromMemory(int index) {
+        this.pageIndex.remove(index);
     }
 
-    public void removeProcessPageFromMemory(int index, int processID) {
-        this.pageIndex[index] = processID;
-    }
+    public void addPage(Page page){ this.pageIndex.add(page);}
+
+    public void removePage(Page page){ this.pageIndex.remove(page);}
 
     public Process(int processId, int processSize){
         this.processId = processId;
         this.processSize = processSize;
-        this.pageIndex = new int[Commons.MEMORY_SIZE/Commons.PAGE_SIZE];
+        this.pageIndex = new ArrayList<>();
         this.swapMemoryLocations = new int[Commons.SWAP_SIZE/Commons.PAGE_SIZE];
     }
 }
