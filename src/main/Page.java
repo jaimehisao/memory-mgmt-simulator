@@ -1,7 +1,5 @@
 package main;
 
-import java.awt.*;
-
 public class Page {
 
     int num;
@@ -21,10 +19,6 @@ public class Page {
         this.lastAppearance = -1;
         this.timesUsed = 0;
         this.process = process;
-    }
-
-    public int getLocationInSwap() {
-        return locationInSwap;
     }
 
     public void setLocationInSwap(int locationInSwap) {
@@ -51,6 +45,20 @@ public class Page {
         return lastAppearance;
     }
 
+    public int getLocationInSwap() {
+        return locationInSwap;
+    }
+
+    public void setInserted(boolean inserted) {
+        this.inserted = inserted;
+    }
+
+    public int getNum() {
+        return num;
+    }
+
+    public Process getProcess(){ return process; }
+
     public void setLastAppearance(int lastAppearance) {
         this.lastAppearance = lastAppearance;
     }
@@ -67,17 +75,7 @@ public class Page {
         return inserted;
     }
 
-    public void setInserted(boolean inserted) {
-        this.inserted = inserted;
-    }
-
-    public int getNum() {
-        return num;
-    }
-
     public void setNum(int num) {
         this.num = num;
     }
-
-    public Process getProcess(){ return process; }
 }

@@ -45,13 +45,14 @@ public class Main {
                 System.out.println("Syntax: Process Size and PID (534 5838 assigns 534 bytes to PID 5838)");
                 int size = scanner.nextInt();
                 int processID = scanner.nextInt();
-                simulation.createProcess(processID, size);
+                simulation.createNewProcess(processID, size);
             }
 
             if(input == 'A'){
                 //Obtain physical address that corresponds to X virtual address of process Z
-                System.out.println("Syntax: Virtual ID, PID, M\n" +
-                        "If M is 0 only the address is returned, if it is 1 it also modifies the address.");
+                System.out.println("Syntax: Virtual Address, Process ID, M\n" +
+                        "Where if M is 0, only the address is returned, if it is 1 it also modifies the address.");
+                //TODO add 0/1 option
                 int processID = scanner.nextInt();
                 int addr = scanner.nextInt();
                 System.out.println("The physical address for virtual address " + addr + " from process " + processID +

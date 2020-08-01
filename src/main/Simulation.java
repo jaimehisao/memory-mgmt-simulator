@@ -34,11 +34,11 @@ public class Simulation {
      *************************/
 
     /**
-     * Creates a process, then assigns memory to it.
+     * Creates a process, then assigns memory to it. Used only with new processes, not when loading from swap/primary.
      * @param processID the ID of the process
      * @param processSize the size, in bytes, of the process.
      */
-    public void createProcess(int processID, int processSize){
+    public void createNewProcess(int processID, int processSize){
         if(processSize > Commons.MEMORY_SIZE){
             System.out.println("Program is too large, can't load into memory!");
             return;
@@ -46,7 +46,7 @@ public class Simulation {
         Process process = new Process(processID, processSize);
         assignMemoryToNewProcess(process);
         activeProcesses.add(process);
-        System.out.println("Assigned " + processSize + " bytes of memory to process " + processID);
+        System.out.println("Assigned process with PID  " + processSize + " bytes of memory to process " + processID);
     }
 
 
@@ -57,8 +57,8 @@ public class Simulation {
     private void assignMemoryToNewProcess(Process process){
         int pagesRequired = (int)Math.ceil(process.getProcessSize()/Commons.PAGE_SIZE);
         if(pagesRequired > pagesAvailable){
-            System.out.println("The process requires more pages, swapping processes out!");
-            for (int i = 0; i < pagesRequired; i++){
+            System.out.println("The process you are trying to insert requires more pages, swapping processes out!");
+            for (int i = 0; i < pagesRequired-pagesAvailable; i++){
                 swapOutMemory();
             }
         }
@@ -82,7 +82,7 @@ public class Simulation {
             if(memory[i] == null){
                 memory[i] = pageToAssign; //Assign the page to memory
                 --pagesAvailable; //Reduce page availability
-                System.out.println("Assigned page " + i + " to process " + process.getProcessId());
+                System.out.println("Assigned page #" + i + " to process with PID " + process.getProcessId());
                 break;
             }
         }
@@ -101,18 +101,8 @@ public class Simulation {
                 page.getProcess().removePageFromPrimaryMemory(page);
                 page.getProcess().addToSwapPageIndex(page);
                 swap[i] = page;
+                break;
             }
-        }
-    }
-
-    /**
-     * Serves as a wrapper for both replacement policies, to simplify coding.
-     */
-    private void swapOutMemory(){
-        if(type == 0){
-            swapUsingFIFOPolicy();
-        }else if(type == 1){
-            swapUsingLRUPolicy();
         }
     }
 
@@ -152,16 +142,43 @@ public class Simulation {
     public int returnPhysicalAddress(int addr, int processID){
         //TODO check if the given address actually exists.
         //TODO case when the process is not loaded in memory.
-        int pageNumber = addr/Commons.PAGE_SIZE;
+        //TODO check if requested addr is inside the process (not a bigger or smaller (negative) addr)
+        int pageNumbertoLookFor = (int)Math.floor(addr/Commons.PAGE_SIZE);
+        System.out.println(pageNumbertoLookFor);
         int page = 0;
         for (int i = 0; i < memory.length; i++){
-            if(memory[i].getProcess().getProcessId() == processID && page == pageNumber){
+            if(memory[i].getProcess().getProcessId() == processID && page == pageNumbertoLookFor){
                 return i*Commons.PAGE_SIZE+addr;
             }else{
                 ++page;
             }
         }
-        return 0;
+        return page;
+    }
+
+    /* ***************** Memory Swapping Methods *******************************/
+
+    /**
+     * Serves as a wrapper for both replacement policies, to simplify coding.
+     */
+    private void swapOutMemory(){
+        if(type == 0){
+            swapUsingFIFOPolicy();
+        }else if(type == 1){
+            swapUsingLRUPolicy();
+        }
+    }
+
+    /**
+     * Will return the required page to primary memory.
+     * @param requiredPageNumber recieves the page number of the page to load and then loads it into memory.
+     */
+    private void swapInMemory(int requiredPageNumber){
+        for (int i = 0; i < swap.length; i++){
+            if(swap[i].getNum() == requiredPageNumber){
+                assignPageToPrimaryMemory(swap[i].getProcess(), swap[i]);
+            }
+        }
     }
 
     /* ***************** Memory Replacement Methods *******************************/
@@ -210,17 +227,7 @@ public class Simulation {
         return pageThatEnteredFirst.getLocationInMemory();
     }
 
-    /**
-     * Will return the required page to primary memory.
-     * @param requiredPageNumber recieves the page number of the page to load and then loads it into memory.
-     */
-    private void swapInMemory(int requiredPageNumber){
-        for (int i = 0; i < swap.length; i++){
-            if(swap[i].getNum() == requiredPageNumber){
-                assignPageToPrimaryMemory(swap[i].getProcess(), swap[i]);
-            }
-        }
-    }
+
 
     //not prod
     public void viewSimulation(){
