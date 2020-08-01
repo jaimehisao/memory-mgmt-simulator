@@ -80,6 +80,7 @@ public class Simulation {
     private void loadPageIntoMemory(Process process, Page pageToAssign){
         for (int i = 0; i < memory.length; i++){
             if(memory[i] == null){
+                pageToAssign.setTimeInserted(systemTimestamp);
                 memory[i] = pageToAssign; //Assign the page to memory
                 --pagesAvailable; //Reduce page availability
                 System.out.println("Assigned page #" + i + " to process with PID " + process.getProcessId());
@@ -184,20 +185,16 @@ public class Simulation {
             return 0;
         }
 
-        //If user requested modification to the page.
-        if(modify){
-
-        }
 
         int pageNumberToLookFor = requestedAddress/Commons.PAGE_SIZE;
         //Check if pages is loaded in memory
         boolean loaded = false;
-        for (int i = 0; i < memory.length; i++){
-            if(memory[i].getNum() == pageNumberToLookFor){
+        for (Page value : memory) {
+            if (value != null && value.getNum() == pageNumberToLookFor) {
                 System.out.println("Requested page found in memory");
                 loaded = true;
             }
-            if(!loaded){
+            if (!loaded) {
                 swapInMemory(processID, pageNumberToLookFor);
             }
         }
@@ -205,6 +202,10 @@ public class Simulation {
         int page = 0;
         for (int i = 0; i < memory.length; i++){
             if(memory[i].getProcess().getProcessId() == processID && page == pageNumberToLookFor){
+                //If user requested modification to the page.
+                if(modify){
+                    memory[i].setLastAppearance(systemTimestamp);
+                }
                 return i*Commons.PAGE_SIZE+requestedAddress%Commons.PAGE_SIZE;
             }else{
                 ++page;
