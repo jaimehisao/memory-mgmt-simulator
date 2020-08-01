@@ -39,6 +39,7 @@ public class Simulation {
      * @param processSize the size, in bytes, of the process.
      */
     public void createNewProcess(int processID, int processSize){
+        //TODO check if process with same PID doesn't exist.
         if(processSize > Commons.MEMORY_SIZE){
             System.out.println("Program is too large, can't load into memory!");
             return;
@@ -112,25 +113,42 @@ public class Simulation {
      * @return the number of Page Frames that were deleted.
      */
     public int freeProcessFromMemory(int processID){
-        //TODO check if process exists in memory
-        //TODO consider swap pages
         int numberOfFramesDeleted = 0;
+        Process processToDelete = null;
         //Removes the process from the control array.
         for(int i = 0; i < activeProcesses.size(); i++ ){
             if(activeProcesses.get(i).getProcessId() == processID){
+                processToDelete = activeProcesses.get(i);
                 activeProcesses.remove(activeProcesses.get(i));
             }
         }
 
-        //Deletes the Pages owned by the process using the PID.
-        for (int i = 0; i < memory.length; i++){
-            if(memory[i] != null && memory[i].getProcess().getProcessId() == processID){
-                memory[i] = null;
-                System.out.println("Removing PID " + processID + " from memory frame #" + i);
-                ++pagesAvailable;
-                ++numberOfFramesDeleted;
+        if(processToDelete == null){
+            System.out.println("Process does not exist! Try again.");
+            return 0;
+        }
+
+        for (Page swapPage : processToDelete.pageIndexInSwap){
+            for (int i = 0; i < swap.length; i++){
+                if(swapPage.equals(swap[i])){
+                    swap[i] = null;
+                    ++numberOfFramesDeleted;
+                    System.out.println("Removing PID " + processID + " from swap frame #" + i);
+                }
             }
         }
+
+        for (Page page : processToDelete.pageIndexInPrimaryMemory){
+            for (int i = 0; i < memory.length; i++){
+                if(page.equals(memory[i])){
+                    memory[i] = null;
+                    System.out.println("Removing PID " + processID + " from memory frame #" + i);
+                    ++pagesAvailable;
+                    ++numberOfFramesDeleted;
+                }
+            }
+        }
+
         return numberOfFramesDeleted;
     }
 
