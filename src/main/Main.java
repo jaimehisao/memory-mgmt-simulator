@@ -11,7 +11,7 @@ public class Main {
 
         int option = 99;
 
-        while(option != 0 && option != 1){
+        while(option != 1 && option != 2){
             System.out.println("Please choose the memory replacement policy you want to use...\n" +
                     "1.- Least Recently Used\n" +
                     "2.- First In First Out");
@@ -20,7 +20,7 @@ public class Main {
 
         Simulation simulation;
 
-        if(option == 0){
+        if(option == 2){
             simulation = new Simulation(0); //Type FIFO
             System.out.println("Created simulation using FIFO replacement policy.");
         }else {
@@ -56,8 +56,9 @@ public class Main {
                 int addr = scanner.nextInt();
                 int processID = scanner.nextInt();
                 String modify = scanner.next();
+                boolean modifyBoolean = modify.equals("1");
                 System.out.println("The physical address for virtual address " + addr + " from process " + processID +
-                        " is " + simulation.returnPhysicalAddress(addr, processID, Boolean.parseBoolean(modify)));
+                        " is " + simulation.returnPhysicalAddress(addr, processID, modifyBoolean));
             }
 
             if(input == 'L'){

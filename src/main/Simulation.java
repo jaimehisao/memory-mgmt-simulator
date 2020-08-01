@@ -47,7 +47,7 @@ public class Simulation {
         Process process = new Process(processID, processSize);
         assignMemoryToNewProcess(process);
         activeProcesses.add(process);
-        System.out.println("Assigned process with PID " + processSize + " bytes of memory to process " + processID);
+        System.out.println("Assigned process with size " + processSize + " bytes of memory to process " + processID);
     }
 
 
@@ -80,10 +80,11 @@ public class Simulation {
     private void loadPageIntoMemory(Process process, Page pageToAssign){
         for (int i = 0; i < memory.length; i++){
             if(memory[i] == null){
+                ++systemTimestamp;
                 pageToAssign.setTimeInserted(systemTimestamp);
                 memory[i] = pageToAssign; //Assign the page to memory
                 --pagesAvailable; //Reduce page availability
-                System.out.println("Assigned page #" + i + " to process with PID " + process.getProcessId());
+                System.out.println("Assigned page" + " to process with PID " + process.getProcessId());
                 break;
             }
         }
@@ -96,7 +97,7 @@ public class Simulation {
     private void sendToSwapMemory(Page page){
         for (int i = 0; i < swap.length; i++){
             if(swap[i] == null){
-                page.setInserted(false);
+                page.setReferenceBit(false);
                 page.setLocationInSwap(i);
                 page.setLocationInMemory(Integer.MAX_VALUE);
                 page.getProcess().removePageFromPrimaryMemory(page);
@@ -205,6 +206,7 @@ public class Simulation {
                 //If user requested modification to the page.
                 if(modify){
                     memory[i].setLastAppearance(systemTimestamp);
+                    System.out.println("Modified page#" + memory[i].getNum() + " in system-timestamp " + systemTimestamp);
                 }
                 return i*Commons.PAGE_SIZE+requestedAddress%Commons.PAGE_SIZE;
             }else{
@@ -251,10 +253,10 @@ public class Simulation {
         //TODO protect from NullPointerExceptions on the lower memory blocks, this is due to the memory array containing
         // null values, easier to surround with if than try and catch.
         Page pageWithLeastRecentUsage = null;
-        int lastUsage = 0;
+        int lastUsage = Integer.MAX_VALUE;
         for (Page page : memory) {
-            if (page != null && systemTimestamp - page.getLastAppearance() > lastUsage) {
-                lastUsage = systemTimestamp - page.getLastAppearance();
+            if (page != null &&  page.getLastAppearance() < lastUsage && page.getLastAppearance() != 0) {
+                lastUsage =  page.getLastAppearance();
                 pageWithLeastRecentUsage = page;
             }
         }
@@ -276,7 +278,7 @@ public class Simulation {
         int firstEntryTimestamp = Integer.MAX_VALUE;
         for (Page page : memory) {
             if (page != null && firstEntryTimestamp > page.getTimeInserted()) {
-                firstEntryTimestamp = systemTimestamp - page.getTimeInserted();
+                firstEntryTimestamp =  page.getTimeInserted();
                 pageThatEnteredFirst = page;
             }
         }

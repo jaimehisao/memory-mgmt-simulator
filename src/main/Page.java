@@ -9,14 +9,14 @@ public class Page {
     int lastAppearance;
     int timeInserted;
     int timesUsed;
-    boolean inserted;
+    boolean referenceBit;
 
      public Page(int num, Process process){
         this.num = num;
         this.locationInMemory = 0;
         this.locationInSwap = 0;
-        this.inserted = true;
-        this.lastAppearance = -1;
+        this.referenceBit = true;
+        this.lastAppearance = 0;
         this.timesUsed = 0;
         this.process = process;
     }
@@ -49,8 +49,8 @@ public class Page {
         return locationInSwap;
     }
 
-    public void setInserted(boolean inserted) {
-        this.inserted = inserted;
+    public void setReferenceBit(boolean referenceBit) {
+        this.referenceBit = referenceBit;
     }
 
     public int getNum() {
@@ -71,8 +71,8 @@ public class Page {
         this.timesUsed = timesUsed;
     }
 
-    public boolean isInserted() {
-        return inserted;
+    public boolean isReferenceBit() {
+        return referenceBit;
     }
 
     public void setNum(int num) {
