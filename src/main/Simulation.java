@@ -9,6 +9,7 @@ public class Simulation {
     int pagesAvailable;
     int type; //Either FIFO(0)/LRU(1)
     ArrayList<Process> activeProcesses;
+    int systemTimestamp = 0;
 
 
     /**
@@ -56,6 +57,11 @@ public class Simulation {
         }
     }
 
+    /**
+     * Assigns a page to memory
+     * @param process Process Object that owns the page
+     * @param pageToAssign Page object that needs to be assigned into memory. Be it new or from Swap.
+     */
     private void assignPageToMemory(Process process, Page pageToAssign){
         for (int i = 0; i < memory.length; i++){
             if(memory[i] == null){
@@ -79,17 +85,21 @@ public class Simulation {
     }
 
     /**
-     * Frees all of the memory of a given PID.
+     * Frees all of the memory of a given PID. Not to be used to remove a certain number of pages, since this process
+     * is desctructive and will erase the whole process from memory.
      * @param processID PID of the process to be removed from memory.
+     * @return the number of Page Frames that were deleted.
      */
     public int freeProcessFromMemory(int processID){
         int numberOfFramesDeleted = 0;
+        //Removes the process from the control array.
         for(int i = 0; i < activeProcesses.size(); i++ ){
             if(activeProcesses.get(i).getProcessId() == processID){
                 activeProcesses.remove(activeProcesses.get(i));
             }
         }
 
+        //Deletes the Pages owned by the process using the PID.
         for (int i = 0; i < memory.length; i++){
             if(memory[i] != null && memory[i].getPid() == processID){
                 memory[i] = null;
@@ -121,11 +131,29 @@ public class Simulation {
         return 0;
     }
 
-    /**
-     * Will swap out memory according to the LRU replacement policy.
-     */
-    private void leastRecentlyUsed(int requiredPages){
+    private void sendToSwapMemory(Page page){
+        //Insert into memory, remove actual memory location, assign swap location.
+    }
 
+    /**
+     * Removes page from memory and saves it to Swap memory.
+     * In accordance to the LRU replacement policy.
+     */
+    private int removeLeastRecentlyUsedPage(){
+        Page pageWithLeastRecentUsage = null;
+        int lastUsage = 0;
+        for (int i = 0; i < memory.length; i++){
+            if(systemTimestamp - memory[i].getLastAppearance() > lastUsage){
+                lastUsage = systemTimestamp - memory[i].getLastAppearance();
+                pageWithLeastRecentUsage = memory[i];
+            }
+        }
+
+        //Removes the page from memory and sends it over to swap memory.
+        memory[pageWithLeastRecentUsage.getLocationInMemory()] = null;
+        sendToSwapMemory(pageWithLeastRecentUsage);
+        ++pagesAvailable;
+        return pageWithLeastRecentUsage.getLocationInMemory();
     }
 
     /**
