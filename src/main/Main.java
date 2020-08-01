@@ -34,7 +34,7 @@ public class Main {
             char input = 'Z';
             while(input != 'P' && input != 'A' && input != 'L' && input != 'F'){
                 System.out.println("P -> Assign a process to memory\n" +
-                        "A -> Get a the physical address of a virtual address \n" +
+                        "A -> Get a the physical address of a virtual address or modify it's value\n" +
                         "L -> Free up memory of a given process\n" +
                         "F -> Exit the simulation");
                 input = scanner.next().charAt(0);
@@ -53,10 +53,11 @@ public class Main {
                 System.out.println("Syntax: Virtual Address, Process ID, M\n" +
                         "Where if M is 0, only the address is returned, if it is 1 it also modifies the address.");
                 //TODO add 0/1 option
-                int processID = scanner.nextInt();
                 int addr = scanner.nextInt();
+                int processID = scanner.nextInt();
+                String modify = scanner.next();
                 System.out.println("The physical address for virtual address " + addr + " from process " + processID +
-                        " is " + simulation.returnPhysicalAddress(addr, processID));
+                        " is " + simulation.returnPhysicalAddress(addr, processID, Boolean.parseBoolean(modify)));
             }
 
             if(input == 'L'){

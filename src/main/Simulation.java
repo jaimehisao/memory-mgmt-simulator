@@ -10,11 +10,11 @@ import java.util.ArrayList;
 
 public class Simulation {
 
-    private Page memory[]; //Representation of virtual memory.
-    private Page swap[]; //Representation of swap area.
+    private final Page[] memory; //Representation of virtual memory.
+    private final Page[] swap; //Representation of swap area.
     private int pagesAvailable;
     private final int type; //Either FIFO(0)/LRU(1)
-    private ArrayList<Process> activeProcesses;
+    private final ArrayList<Process> activeProcesses;
     private int systemTimestamp = 0;
 
 
@@ -46,7 +46,7 @@ public class Simulation {
         Process process = new Process(processID, processSize);
         assignMemoryToNewProcess(process);
         activeProcesses.add(process);
-        System.out.println("Assigned process with PID  " + processSize + " bytes of memory to process " + processID);
+        System.out.println("Assigned process with PID " + processSize + " bytes of memory to process " + processID);
     }
 
 
@@ -65,11 +65,10 @@ public class Simulation {
         int pagesAssignedToProcess = 0;
         while(pagesRequired > pagesAssignedToProcess){
             Page page = new Page(pagesAssignedToProcess+1, process);
-            assignPageToPrimaryMemory(process, page);
+            loadPageIntoMemory(process, page);
             process.addPageToPrimaryMemory(page); //Store information in PCB (associate to process)
             ++pagesAssignedToProcess;
         }
-            activeProcesses.add(process);//Store information on active processes
     }
 
     /**
@@ -77,7 +76,7 @@ public class Simulation {
      * @param process Process Object that owns the page
      * @param pageToAssign Page object that needs to be assigned into memory. Be it new or from Swap.
      */
-    private void assignPageToPrimaryMemory(Process process, Page pageToAssign){
+    private void loadPageIntoMemory(Process process, Page pageToAssign){
         for (int i = 0; i < memory.length; i++){
             if(memory[i] == null){
                 memory[i] = pageToAssign; //Assign the page to memory
@@ -113,6 +112,8 @@ public class Simulation {
      * @return the number of Page Frames that were deleted.
      */
     public int freeProcessFromMemory(int processID){
+        //TODO check if process exists in memory
+        //TODO consider swap pages
         int numberOfFramesDeleted = 0;
         //Removes the process from the control array.
         for(int i = 0; i < activeProcesses.size(); i++ ){
@@ -135,20 +136,58 @@ public class Simulation {
 
     /**
      * Given the Virtual Address and a PID of a process in Physical Memory or Swap, return the physical or swap addr.
-     * @param addr Virtual Address of the process
+     * @param requestedAddress Virtual Address of the process
      * @param processID PID of the process
      * @return physical address of the given virtual address
      */
-    public int returnPhysicalAddress(int addr, int processID){
+    public int returnPhysicalAddress(int requestedAddress, int processID, boolean modify){
         //TODO check if the given address actually exists.
         //TODO case when the process is not loaded in memory.
         //TODO check if requested addr is inside the process (not a bigger or smaller (negative) addr)
-        int pageNumbertoLookFor = (int)Math.floor(addr/Commons.PAGE_SIZE);
-        System.out.println(pageNumbertoLookFor);
+
+        //Get process that owns the page, if it doesn't exist ownerProcess will equal null
+        Process ownerProcess = null;
+        for (Process process : activeProcesses) {
+            if (process.getProcessId() == processID){
+                ownerProcess = process;
+                break;
+            }
+        }
+
+        //Process is non existent in {@code activeProcesses}
+        if (ownerProcess == null){
+            System.out.println("The referenced process does not exist, please try again!");
+            return 0;
+        }
+
+        //Check if requested address is inside valid range
+        if (ownerProcess.getProcessSize() < requestedAddress){
+            System.out.println("The address you tried to access does not exist in the given process, try again!");
+            return 0;
+        }
+
+        //If user requested modification to the page.
+        if(modify){
+
+        }
+
+        int pageNumberToLookFor = requestedAddress/Commons.PAGE_SIZE;
+        //Check if pages is loaded in memory
+        boolean loaded = false;
+        for (int i = 0; i < memory.length; i++){
+            if(memory[i].getNum() == pageNumberToLookFor){
+                System.out.println("Requested page found in memory");
+                loaded = true;
+            }
+            if(!loaded){
+                swapInMemory(processID, pageNumberToLookFor);
+            }
+        }
+
         int page = 0;
         for (int i = 0; i < memory.length; i++){
-            if(memory[i].getProcess().getProcessId() == processID && page == pageNumbertoLookFor){
-                return i*Commons.PAGE_SIZE+addr;
+            if(memory[i].getProcess().getProcessId() == processID && page == pageNumberToLookFor){
+                return i*Commons.PAGE_SIZE+requestedAddress%Commons.PAGE_SIZE;
             }else{
                 ++page;
             }
@@ -170,13 +209,14 @@ public class Simulation {
     }
 
     /**
-     * Will return the required page to primary memory.
-     * @param requiredPageNumber recieves the page number of the page to load and then loads it into memory.
+     * Will load the required page into primary memory.
+     * @param requiredPageNumber receives the page number of the page to load and then loads it into memory.
      */
-    private void swapInMemory(int requiredPageNumber){
-        for (int i = 0; i < swap.length; i++){
-            if(swap[i].getNum() == requiredPageNumber){
-                assignPageToPrimaryMemory(swap[i].getProcess(), swap[i]);
+    private void swapInMemory(int processID, int requiredPageNumber){
+        for (Page page : swap) {
+            //Making sure that it is the right page number and the right process. (Multiple processes can have an equal page number
+            if (page != null && page.getNum() == requiredPageNumber && page.getProcess().getProcessId() == processID) {
+                loadPageIntoMemory(page.getProcess(), page);
             }
         }
     }
@@ -189,6 +229,8 @@ public class Simulation {
      * @return the page in physical memory that was modified.
      */
     private int swapUsingLRUPolicy(){
+        //TODO protect from NullPointerExceptions on the lower memory blocks, this is due to the memory array containing
+        // null values, easier to surround with if than try and catch.
         Page pageWithLeastRecentUsage = null;
         int lastUsage = 0;
         for (Page page : memory) {
@@ -199,10 +241,10 @@ public class Simulation {
         }
 
         //Removes the page from memory and sends it over to swap memory.
-        memory[pageWithLeastRecentUsage.getLocationInMemory()] = null;
+        memory[pageWithLeastRecentUsage.getLocationInMemory()] = null; //May throw NullPointerException
         sendToSwapMemory(pageWithLeastRecentUsage);
         ++pagesAvailable;
-        return pageWithLeastRecentUsage.getLocationInMemory();
+        return pageWithLeastRecentUsage.getLocationInMemory(); //May throw NullPointerException
     }
 
     /**
