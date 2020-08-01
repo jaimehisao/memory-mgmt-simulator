@@ -44,17 +44,18 @@ public class Simulation {
         int pagesRequired = (int)Math.ceil(process.getProcessSize()/Commons.PAGE_SIZE);
         if(pagesRequired > pagesAvailable){
             System.out.println("The process requires more pages, swapping processes out!");
-            swapOutMemory(pagesRequired);
-        }else{
-            int pagesAssignedToProcess = 0;
-            while(pagesRequired > pagesAssignedToProcess){
-                Page page = new Page(pagesAssignedToProcess+1, process.getProcessId());
-                assignPageToMemory(process, page);
-                process.addPage(page); //Store information in PCB (associate to process)
-                ++pagesAssignedToProcess;
+            for (int i = 0; i < pagesRequired; i++){
+                swapOutMemory();
             }
-            activeProcesses.add(process);//Store information on active processes
         }
+        int pagesAssignedToProcess = 0;
+        while(pagesRequired > pagesAssignedToProcess){
+            Page page = new Page(pagesAssignedToProcess+1, process.getProcessId());
+            assignPageToMemory(process, page);
+            process.addPage(page); //Store information in PCB (associate to process)
+            ++pagesAssignedToProcess;
+        }
+            activeProcesses.add(process);//Store information on active processes
     }
 
     /**
@@ -76,11 +77,11 @@ public class Simulation {
     /**
      * Serves as a wrapper for both replacement policies, to simplify coding.
      */
-    private void swapOutMemory(int pagesRequired){
+    private void swapOutMemory(){
         if(type == 0){
-            firstInFirstOut(pagesRequired);
+            swapUsingFIFOPolicy();
         }else if(type == 1){
-            leastRecentlyUsed(pagesRequired);
+            swapUsingLRUPolicy();
         }
     }
 
@@ -140,13 +141,13 @@ public class Simulation {
      * In accordance to the LRU replacement policy.
      * @return the page in physical memory that was modified.
      */
-    private int removeUsingLRUPolicy(){
+    private int swapUsingLRUPolicy(){
         Page pageWithLeastRecentUsage = null;
         int lastUsage = 0;
-        for (int i = 0; i < memory.length; i++){
-            if(systemTimestamp - memory[i].getLastAppearance() > lastUsage){
-                lastUsage = systemTimestamp - memory[i].getLastAppearance();
-                pageWithLeastRecentUsage = memory[i];
+        for (Page page : memory) {
+            if (page != null && systemTimestamp - page.getLastAppearance() > lastUsage) {
+                lastUsage = systemTimestamp - page.getLastAppearance();
+                pageWithLeastRecentUsage = page;
             }
         }
 
@@ -162,13 +163,13 @@ public class Simulation {
      * In accordance to the LRU replacement policy.
      * @return the page in physical memory that was modified.
      */
-    private int removeUsingFIFOPolicy(){
+    private int swapUsingFIFOPolicy(){
         Page pageThatEnteredFirst = null;
         int firstEntryTimestamp = Integer.MAX_VALUE;
-        for (int i = 0; i < memory.length; i++){
-            if(firstEntryTimestamp > memory[i].getTimeInserted()){
-                firstEntryTimestamp = systemTimestamp - memory[i].getTimeInserted();
-                pageThatEnteredFirst = memory[i];
+        for (Page page : memory) {
+            if (page != null && firstEntryTimestamp > page.getTimeInserted()) {
+                firstEntryTimestamp = systemTimestamp - page.getTimeInserted();
+                pageThatEnteredFirst = page;
             }
         }
 
@@ -189,14 +190,6 @@ public class Simulation {
 
             }
         }
-    }
-
-    private void findFirstProcessThatCameIn(){
-
-    }
-
-    private void findLeastRecentlyUsedProcess(){
-
     }
 
     public void viewSimulation(){
