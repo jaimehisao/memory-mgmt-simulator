@@ -5,15 +5,15 @@ import java.awt.*;
 public class Page {
 
     int num;
-    int nextAppearance = -1;
-    int lastAppearance = -1;
-    int timesUsed = 0;
+    int pid;
+    int lastAppearance;
+    int timesUsed;
     boolean inserted;
 
-     public Page(int num){
+     public Page(int num, int pid){
         this.num = num;
-        this.inserted = false;
-        this.nextAppearance = -1;
+        this.pid = pid;
+        this.inserted = true;
         this.lastAppearance = -1;
         this.timesUsed = 0;
     }
@@ -49,4 +49,6 @@ public class Page {
     public void setNum(int num) {
         this.num = num;
     }
+
+    public int getPid(){ return pid; }
 }
