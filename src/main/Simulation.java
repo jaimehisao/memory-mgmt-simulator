@@ -1,15 +1,21 @@
+/*
+  Simulation.java
+  Version 0.1
+  Project for Operating Systems Class at Tec de Monterrey 2020
+  This should not be used as a submission for a project if it is not owned by you.
+ */
 package main;
 
 import java.util.ArrayList;
 
 public class Simulation {
 
-    Page memory[]; //Representation of virtual memory.
-    Page swap[]; //Representation of swap area.
-    int pagesAvailable;
-    int type; //Either FIFO(0)/LRU(1)
-    ArrayList<Process> activeProcesses;
-    int systemTimestamp = 0;
+    private Page memory[]; //Representation of virtual memory.
+    private Page swap[]; //Representation of swap area.
+    private int pagesAvailable;
+    private final int type; //Either FIFO(0)/LRU(1)
+    private ArrayList<Process> activeProcesses;
+    private int systemTimestamp = 0;
 
 
     /**
@@ -50,7 +56,7 @@ public class Simulation {
         }
         int pagesAssignedToProcess = 0;
         while(pagesRequired > pagesAssignedToProcess){
-            Page page = new Page(pagesAssignedToProcess+1, process.getProcessId());
+            Page page = new Page(pagesAssignedToProcess+1, process);
             assignPageToMemory(process, page);
             process.addPage(page); //Store information in PCB (associate to process)
             ++pagesAssignedToProcess;
@@ -70,6 +76,21 @@ public class Simulation {
                 --pagesAvailable; //Reduce page availability
                 System.out.println("Assigned page " + i + " to process " + process.getProcessId());
                 break;
+            }
+        }
+    }
+
+    /**
+     * Saves the Page to the first available Page slot in Swap Memory.
+     * @param page page to save in Swap
+     */
+    private void sendToSwapMemory(Page page){
+        for (int i = 0; i < swap.length; i++){
+            if(swap[i] == null){
+                page.setInserted(false);
+                page.setLocationInSwap(i);
+                page.setLocationInMemory(Integer.MAX_VALUE);
+                swap[i] = page;
             }
         }
     }
@@ -102,7 +123,7 @@ public class Simulation {
 
         //Deletes the Pages owned by the process using the PID.
         for (int i = 0; i < memory.length; i++){
-            if(memory[i] != null && memory[i].getPid() == processID){
+            if(memory[i] != null && memory[i].getProcess().getProcessId() == processID){
                 memory[i] = null;
                 System.out.println("Removing PID " + processID + " from memory frame #" + i);
                 ++pagesAvailable;
@@ -123,7 +144,7 @@ public class Simulation {
         int pageNumber = addr/Commons.PAGE_SIZE;
         int page = 0;
         for (int i = 0; i < memory.length; i++){
-            if(memory[i].getPid() == processID && page == pageNumber){
+            if(memory[i].getProcess().getProcessId() == processID && page == pageNumber){
                 return i*Commons.PAGE_SIZE+addr;
             }else{
                 ++page;
@@ -132,9 +153,7 @@ public class Simulation {
         return 0;
     }
 
-    private void sendToSwapMemory(Page page){
-        //Insert into memory, remove actual memory location, assign swap location.
-    }
+    /* *****************Memory Replacement Methods*******************************/
 
     /**
      * Removes page from memory and saves it to Swap memory.
@@ -192,9 +211,12 @@ public class Simulation {
         }
     }
 
+    //not prod
     public void viewSimulation(){
         System.out.println("Pages: " + java.util.Arrays.toString(memory));
         System.out.println("Swap: " + java.util.Arrays.toString(swap));
     }
+
+
 
 }
