@@ -138,8 +138,9 @@ public class Simulation {
     /**
      * Removes page from memory and saves it to Swap memory.
      * In accordance to the LRU replacement policy.
+     * @return the page in physical memory that was modified.
      */
-    private int removeLeastRecentlyUsedPage(){
+    private int removeUsingLRUPolicy(){
         Page pageWithLeastRecentUsage = null;
         int lastUsage = 0;
         for (int i = 0; i < memory.length; i++){
@@ -157,10 +158,25 @@ public class Simulation {
     }
 
     /**
-     * Will swap out memory according to the FIFO/FCFS replacement policy.
+     * Removes page from memory and saves it to Swap memory.
+     * In accordance to the LRU replacement policy.
+     * @return the page in physical memory that was modified.
      */
-    private void firstInFirstOut(int requiredPages){
+    private int removeUsingFIFOPolicy(){
+        Page pageThatEnteredFirst = null;
+        int firstEntryTimestamp = Integer.MAX_VALUE;
+        for (int i = 0; i < memory.length; i++){
+            if(firstEntryTimestamp > memory[i].getTimeInserted()){
+                firstEntryTimestamp = systemTimestamp - memory[i].getTimeInserted();
+                pageThatEnteredFirst = memory[i];
+            }
+        }
 
+        //Removes the page from memory and sends it over to swap memory.
+        memory[pageThatEnteredFirst.getLocationInMemory()] = null;
+        sendToSwapMemory(pageThatEnteredFirst);
+        ++pagesAvailable;
+        return pageThatEnteredFirst.getLocationInMemory();
     }
 
     /**
