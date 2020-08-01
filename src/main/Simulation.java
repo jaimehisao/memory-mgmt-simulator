@@ -201,7 +201,7 @@ public class Simulation {
 
         int page = 0;
         for (int i = 0; i < memory.length; i++){
-            if(memory[i].getProcess().getProcessId() == processID && page == pageNumberToLookFor){
+            if(memory[i] != null && memory[i].getProcess().getProcessId() == processID && page == pageNumberToLookFor){
                 //If user requested modification to the page.
                 if(modify){
                     memory[i].setLastAppearance(systemTimestamp);
