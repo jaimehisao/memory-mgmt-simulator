@@ -261,6 +261,11 @@ public class Simulation {
             }
         }
 
+        //Case when no page has been modified, so we use FIFO to do the replacement
+        if(pageWithLeastRecentUsage == null){
+            return swapUsingFIFOPolicy();
+        }
+
         //Removes the page from memory and sends it over to swap memory.
         memory[pageWithLeastRecentUsage.getLocationInMemory()] = null; //May throw NullPointerException
         sendToSwapMemory(pageWithLeastRecentUsage);
