@@ -2,15 +2,16 @@ package main;
 
 public class Page {
 
-    int num;
-    Process process;
-    int locationInMemory;
-    int locationInSwap;
-    int lastAppearance;
-    int timeInserted;
-    int timesUsed;
-    boolean referenceBit;
+    int num;                    //Stores page number
+    Process process;            //Process the page belongs to
+    int locationInMemory;       //Stores location in memory
+    int locationInSwap;         //Stores location in virtual memory
+    int lastAppearance;         //Stores last Appearance
+    int timeInserted;           //Stores time inserted
+    int timesUsed;              //Stores times used
+    boolean referenceBit;       //Stores the reference bit
 
+    //Constructor
      public Page(int num, Process process){
         this.num = num;
         this.locationInMemory = 0;
@@ -20,7 +21,11 @@ public class Page {
         this.timesUsed = 0;
         this.process = process;
     }
-
+    
+    /**
+     * Setter of the virtual memory location
+     * @param locationInSwap 
+     */
     public void setLocationInSwap(int locationInSwap) {
         this.locationInSwap = locationInSwap;
     }
