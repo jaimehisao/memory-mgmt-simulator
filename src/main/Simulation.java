@@ -7,15 +7,18 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Simulation {
 
-    private final Page[] memory; //Representation of virtual memory.
-    private final Page[] swap; //Representation of swap area.
-    private int pagesAvailable;
-    private final int type; //Either FIFO(0)/LRU(1)
-    private final ArrayList<Process> activeProcesses;
-    private int systemTimestamp = 0;
+    private final Page[] memory;                        //Representation of virtual memory.
+    private final Page[] swap;                          //Representation of swap area.
+    private int pagesAvailable;                         //Stores pages available
+    private int swapsIn;                                //Number of Swaps In made
+    private int swapsOut;                               //Number of Swaps Out made
+    private final int type;                             //Either FIFO(0)/LRU(1)
+    private final ArrayList<Process> activeProcesses;   //Active process ArrayList
+    private int systemTimestamp = 0;                    //Stores the timestamp
 
 
     /**
@@ -26,6 +29,8 @@ public class Simulation {
         swap = new Page[Commons.SWAP_SIZE/Commons.PAGE_SIZE];
         pagesAvailable = Commons.MEMORY_SIZE/Commons.PAGE_SIZE;
         activeProcesses = new ArrayList<>();
+        swapsIn = 0;
+        swapsOut = 0;
         this.type = type;
     }
 
@@ -34,20 +39,21 @@ public class Simulation {
      *************************/
 
     /**
-     * Creates a process, then assigns memory to it. Used only with new processes, not when loading from swap/primary.
+     * Creates a process, then assigns memory to it.Used only with new processes, not when loading from swap/primary.
      * @param processID the ID of the process
      * @param processSize the size, in bytes, of the process.
+     * @param PrList the list of process created
      */
-    public void createNewProcess(int processID, int processSize){
-        //TODO check if process with same PID doesn't exist.
+    public void createNewProcess(int processID, int processSize, LinkedList<Process> PrList){
         if(processSize > Commons.MEMORY_SIZE){
-            System.out.println("Program is too large, can't load into memory!");
+            System.out.println("Process is too large, can't load into memory!");
             return;
         }
         Process process = new Process(processID, processSize);
         assignMemoryToNewProcess(process);
         activeProcesses.add(process);
-        System.out.println("Assigned process with size " + processSize + " bytes of memory to process " + processID);
+        System.out.println("Assigned " + processSize + " bytes of memory to process " + processID);
+        PrList.add(process);
     }
 
 
@@ -84,7 +90,7 @@ public class Simulation {
                 pageToAssign.setTimeInserted(systemTimestamp);
                 memory[i] = pageToAssign; //Assign the page to memory
                 --pagesAvailable; //Reduce page availability
-                System.out.println("Assigned page" + " to process with PID " + process.getProcessId());
+                // System.out.println("Assigned page" + " to process with PID " + process.getProcessId());
                 break;
             }
         }
@@ -103,6 +109,7 @@ public class Simulation {
                 page.getProcess().removePageFromPrimaryMemory(page);
                 page.getProcess().addToSwapPageIndex(page);
                 swap[i] = page;
+                swapsOut++;
                 break;
             }
         }
@@ -135,7 +142,7 @@ public class Simulation {
                 if(swapPage.equals(swap[i])){
                     swap[i] = null;
                     ++numberOfFramesDeleted;
-                    System.out.println("Removing PID " + processID + " from swap frame #" + i);
+                    // System.out.println("Removing PID " + processID + " from swap frame #" + i);
                 }
             }
         }
@@ -144,7 +151,7 @@ public class Simulation {
             for (int i = 0; i < memory.length; i++){
                 if(page.equals(memory[i])){
                     memory[i] = null;
-                    System.out.println("Removing PID " + processID + " from memory frame #" + i);
+                    // System.out.println("Removing PID " + processID + " from memory frame #" + i);
                     ++pagesAvailable;
                     ++numberOfFramesDeleted;
                 }
@@ -161,10 +168,6 @@ public class Simulation {
      * @return physical address of the given virtual address
      */
     public int returnPhysicalAddress(int requestedAddress, int processID, boolean modify){
-        //TODO check if the given address actually exists.
-        //TODO case when the process is not loaded in memory.
-        //TODO check if requested addr is inside the process (not a bigger or smaller (negative) addr)
-
         //Get process that owns the page, if it doesn't exist ownerProcess will equal null
         Process ownerProcess = null;
         for (Process process : activeProcesses) {
@@ -192,7 +195,7 @@ public class Simulation {
         boolean loaded = false;
         for (Page value : memory) {
             if (value != null && value.getNum() == pageNumberToLookFor) {
-                System.out.println("Requested page found in memory");
+                // System.out.println("Requested page found in memory");
                 loaded = true;
             }
             if (!loaded) {
@@ -238,6 +241,7 @@ public class Simulation {
             //Making sure that it is the right page number and the right process. (Multiple processes can have an equal page number
             if (page != null && page.getNum() == requiredPageNumber && page.getProcess().getProcessId() == processID) {
                 loadPageIntoMemory(page.getProcess(), page);
+                swapsIn++;
             }
         }
     }
@@ -248,10 +252,8 @@ public class Simulation {
      * Removes page from memory and saves it to Swap memory.
      * In accordance to the LRU replacement policy.
      * @return the page in physical memory that was modified.
-     */
+     */ 
     private int swapUsingLRUPolicy(){
-        //TODO protect from NullPointerExceptions on the lower memory blocks, this is due to the memory array containing
-        // null values, easier to surround with if than try and catch.
         Page pageWithLeastRecentUsage = null;
         int lastUsage = Integer.MAX_VALUE;
         for (Page page : memory) {
@@ -260,14 +262,13 @@ public class Simulation {
                 pageWithLeastRecentUsage = page;
             }
         }
-
         //Case when no page has been modified, so we use FIFO to do the replacement
         if(pageWithLeastRecentUsage == null){
             return swapUsingFIFOPolicy();
         }
-
+        
         //Removes the page from memory and sends it over to swap memory.
-        memory[pageWithLeastRecentUsage.getLocationInMemory()] = null; //May throw NullPointerException
+        memory[pageWithLeastRecentUsage.getLocationInMemory()] = null; //May throw NullPointerException        
         sendToSwapMemory(pageWithLeastRecentUsage);
         ++pagesAvailable;
         return pageWithLeastRecentUsage.getLocationInMemory(); //May throw NullPointerException
@@ -303,6 +304,19 @@ public class Simulation {
         System.out.println("Swap: " + java.util.Arrays.toString(swap));
     }
 
+    public int getSystemTimestamp() {
+        return systemTimestamp;
+    }
 
+    public int getSwapsIn() {
+        return swapsIn;
+    }
+
+    public int getSwapsOut() {
+        return swapsOut;
+    }
+    
+    
+    
 
 }
