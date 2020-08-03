@@ -45,7 +45,6 @@ public class Simulation {
      * @param PrList the list of process created
      */
     public void createNewProcess(int processID, int processSize, LinkedList<Process> PrList){
-        //TODO check if process with same PID doesn't exist.
         if(processSize > Commons.MEMORY_SIZE){
             System.out.println("Process is too large, can't load into memory!");
             return;
@@ -169,10 +168,6 @@ public class Simulation {
      * @return physical address of the given virtual address
      */
     public int returnPhysicalAddress(int requestedAddress, int processID, boolean modify){
-        //TODO check if the given address actually exists.
-        //TODO case when the process is not loaded in memory.
-        //TODO check if requested addr is inside the process (not a bigger or smaller (negative) addr)
-
         //Get process that owns the page, if it doesn't exist ownerProcess will equal null
         Process ownerProcess = null;
         for (Process process : activeProcesses) {
@@ -259,8 +254,6 @@ public class Simulation {
      * @return the page in physical memory that was modified.
      */ 
     private int swapUsingLRUPolicy(){
-        //TODO protect from NullPointerExceptions on the lower memory blocks, this is due to the memory array containing
-        // null values, easier to surround with if than try and catch.
         Page pageWithLeastRecentUsage = null;
         int lastUsage = Integer.MAX_VALUE;
         for (Page page : memory) {

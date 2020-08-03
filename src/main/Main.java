@@ -68,7 +68,6 @@ public class Main {
                         //Obtain physical address that corresponds to X virtual address of process Z
                         System.out.println("Syntax: Virtual Address, Process ID, M\n" +
                                 "Where if M is 0, only the address is returned, if it is 1 it also modifies the address.");
-                        //TODO add 0/1 option
                         int addr = Integer.parseInt(input[1]);
                         int processID = Integer.parseInt(input[2]);
                         String modify = input[3];
