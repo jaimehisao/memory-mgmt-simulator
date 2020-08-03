@@ -4,16 +4,19 @@ import java.util.ArrayList;
 
 public class Process {
 
-    int processId;
-    int processSize; //Size in bytes
-    ArrayList<Page> pageIndexInPrimaryMemory; //Stores the Page objects of where a process is located in Physical Mem
-    ArrayList<Page> pageIndexInSwap; //Stores the Page objects of where a process is located in Swap Memory.
+    int processId;                              //Process ID
+    int processSize;                            //Size in bytes
+    int timecreated;                            //Time created
+    Main main;                                  //Main object to access original simulation
+    ArrayList<Page> pageIndexInPrimaryMemory;   //Stores the Page objects of where a process is located in Physical Mem
+    ArrayList<Page> pageIndexInSwap;            //Stores the Page objects of where a process is located in Swap Memory.
 
     public Process(int processId, int processSize){
         this.processId = processId;
         this.processSize = processSize;
         this.pageIndexInPrimaryMemory = new ArrayList<>();
         this.pageIndexInSwap = new ArrayList<>();
+        this.timecreated = Main.getSimulation().getSystemTimestamp();
     }
 
     public void addToSwapPageIndex(Page page){ pageIndexInSwap.add(page); }
@@ -58,5 +61,9 @@ public class Process {
 
     public void setPageIndexInSwap(ArrayList<Page> pageIndexInSwap) {
         this.pageIndexInSwap = pageIndexInSwap;
+    }
+
+    public int getTimecreated() {
+        return timecreated;
     }
 }
