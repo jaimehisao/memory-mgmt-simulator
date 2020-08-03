@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class Main {
     
     static Scanner scanner = new Scanner(System.in);        // Scanner for user input
-    static Scanner fScanner;                                // Scaner for files
+    static Scanner fScanner;                                // Scanner for files
     static Simulation simulation;                           // Simulation object
     
     public static void main(String args[]){
@@ -120,9 +120,11 @@ public class Main {
                     default:
                         break;
                 }
-                simulation.viewSimulation(); //this is debug output, not prod level
+                // simulation.viewSimulation(); //this is debug output, not prod level
             }
-        } catch (FileNotFoundException | NumberFormatException e){}
+        } catch (FileNotFoundException | NumberFormatException e){
+            System.out.println("File with that name does not exist!");
+        }
     }    
 
     public static Simulation getSimulation() {

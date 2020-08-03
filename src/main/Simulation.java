@@ -47,13 +47,13 @@ public class Simulation {
     public void createNewProcess(int processID, int processSize, LinkedList<Process> PrList){
         //TODO check if process with same PID doesn't exist.
         if(processSize > Commons.MEMORY_SIZE){
-            System.out.println("Program is too large, can't load into memory!");
+            System.out.println("Process is too large, can't load into memory!");
             return;
         }
         Process process = new Process(processID, processSize);
         assignMemoryToNewProcess(process);
         activeProcesses.add(process);
-        System.out.println("Assigned process with size " + processSize + " bytes of memory to process " + processID);
+        System.out.println("Assigned " + processSize + " bytes of memory to process " + processID);
         PrList.add(process);
     }
 
@@ -91,7 +91,7 @@ public class Simulation {
                 pageToAssign.setTimeInserted(systemTimestamp);
                 memory[i] = pageToAssign; //Assign the page to memory
                 --pagesAvailable; //Reduce page availability
-                System.out.println("Assigned page" + " to process with PID " + process.getProcessId());
+                // System.out.println("Assigned page" + " to process with PID " + process.getProcessId());
                 break;
             }
         }
@@ -143,7 +143,7 @@ public class Simulation {
                 if(swapPage.equals(swap[i])){
                     swap[i] = null;
                     ++numberOfFramesDeleted;
-                    System.out.println("Removing PID " + processID + " from swap frame #" + i);
+                    // System.out.println("Removing PID " + processID + " from swap frame #" + i);
                 }
             }
         }
@@ -152,7 +152,7 @@ public class Simulation {
             for (int i = 0; i < memory.length; i++){
                 if(page.equals(memory[i])){
                     memory[i] = null;
-                    System.out.println("Removing PID " + processID + " from memory frame #" + i);
+                    // System.out.println("Removing PID " + processID + " from memory frame #" + i);
                     ++pagesAvailable;
                     ++numberOfFramesDeleted;
                 }
@@ -200,7 +200,7 @@ public class Simulation {
         boolean loaded = false;
         for (Page value : memory) {
             if (value != null && value.getNum() == pageNumberToLookFor) {
-                System.out.println("Requested page found in memory");
+                // System.out.println("Requested page found in memory");
                 loaded = true;
             }
             if (!loaded) {
