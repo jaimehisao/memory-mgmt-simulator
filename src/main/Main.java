@@ -19,12 +19,15 @@ public class Main {
         System.out.println("Welcome to the memory management system! \n ");
         
         try{
-            // Get file path, open it and scan it
+            //Get file path, open it and scan it
             String sPath;
+            //Ask fror the file path
             System.out.println("Please write the file path you want to use");
             sPath = scanner.nextLine();
+            //Initialize File object and fscanner
             File myFile = new File(sPath);
             fScanner = new Scanner(myFile);
+            //Thank the user
             System.out.println("Thank you!");
             
             //Ask for memory replacement policy
@@ -48,12 +51,14 @@ public class Main {
             //Attend petitions from file
             while(fScanner.hasNextLine()){
                 
-                // Get and split line
-                String sAux = fScanner.nextLine();
-                String[] input = sAux.split("\\W+");
+                // Get and split lines
+                String sAux = fScanner.nextLine();          //String to store the line content
+                String[] input = sAux.split(" ", 2);        //String array to estore arguments
                 
                 if(null != input[0])switch (input[0]) {
                     case "P":{
+                        //Split String again to avoid comments and unnecessary information
+                        input = sAux.split(" ", 4);
                         //Assign X amount of bytes to process Z
                         System.out.println("Syntax: Process Size and PID (534 5838 assigns 534 bytes to PID 5838)");
                         int size = Integer.parseInt(input[1]);
@@ -65,6 +70,8 @@ public class Main {
                         break;
                     }
                     case "A":{
+                        //Split String again to avoid comments and unnecessary information
+                        input = sAux.split(" ", 5);
                         //Obtain physical address that corresponds to X virtual address of process Z
                         System.out.println("Syntax: Virtual Address, Process ID, M\n" +
                                 "Where if M is 0, only the address is returned, if it is 1 it also modifies the address.");
@@ -80,6 +87,8 @@ public class Main {
                         break;
                     }
                     case "L":{
+                        //Split String again to avoid comments and unnecessary information
+                        input = sAux.split(" ", 3);
                         //Free page frames occupied by process X
                         int processID = Integer.parseInt(input[1]);
                         //Display Input
@@ -89,16 +98,16 @@ public class Main {
                         break;
                     }
                     case "C":
-                        //Split petition ID from comment
-                        String[] sArr = sAux.split(" ", 2);
+                        //Split String again to avoid comments and unnecessary information
+                        input = sAux.split(" ", 2);
                         //Display Input and comment
-                        System.out.println("\nPetition: " + input[0] + "\nComment: " + sArr[1] + "\n");
+                        System.out.println("\nPetition: " + input[0] + "\nComment: " + input[1] + "\n");
                         break;
                     case "F":
                         //Display Input
                         System.out.println("\nPetition: " + input[0] + "\nLoading stats...\n");
-                        int iAc = 0;   //Int to acumulate every turnaround
                         //Get stats from every proces
+                        int iAc = 0;   //Int to acumulate every turnaround                      
                         for(Process p : PrList){
                             System.out.println("Process: " + p.getProcessId() + 
                                     "\tTurnAround = " + (simulation.getSystemTimestamp() - 
@@ -119,13 +128,16 @@ public class Main {
                     default:
                         break;
                 }
-                // simulation.viewSimulation(); //this is debug output, not prod level
             }
         } catch (FileNotFoundException | NumberFormatException e){
+            //Print Error mesage
             System.out.println("File with that name does not exist!");
         }
     }    
-
+    /**
+     * Getter of the simulation object to access stats information
+     * @return simulation
+     */
     public static Simulation getSimulation() {
         return simulation;
     }
