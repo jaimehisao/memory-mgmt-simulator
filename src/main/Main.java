@@ -1,15 +1,16 @@
-/*
-Memory Managment Simulator
- * @author 
- * Jaime Hisao Yesaki Hinojosa      - A01720044
- * Antonio Torres Carvajal          - A01561769          
-*/
 package main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Scanner;
+
+/*
+Memory Managment Simulator
+ * @author 
+ * Jaime Hisao Yesaki Hinojosa      - A01720044
+ * Antonio Torres Carvajal          - A01561769          
+*/
 
 public class Main {
     
@@ -59,12 +60,10 @@ public class Main {
                 
                 // Get and split lines
                 String sAux = fScanner.nextLine();          //String to store the line content
-                String[] input = sAux.split(" ", 2);        //String array to estore arguments
+                String[] input = sAux.split("\\W+");        //String array to estore arguments
                 
                 if(null != input[0])switch (input[0]) {
                     case "P":{
-                        //Split String again to avoid comments and unnecessary information
-                        input = sAux.split(" ", 4);
                         //Assign X amount of bytes to process Z
                         System.out.println("Syntax: Process Size and PID (534 5838 assigns 534 bytes to PID 5838)");
                         int size = Integer.parseInt(input[1]);
@@ -76,8 +75,6 @@ public class Main {
                         break;
                     }
                     case "A":{
-                        //Split String again to avoid comments and unnecessary information
-                        input = sAux.split(" ", 5);
                         //Obtain physical address that corresponds to X virtual address of process Z
                         System.out.println("Syntax: Virtual Address, Process ID, M\n" +
                                 "Where if M is 0, only the address is returned, if it is 1 it also modifies the address.");
@@ -93,8 +90,6 @@ public class Main {
                         break;
                     }
                     case "L":{
-                        //Split String again to avoid comments and unnecessary information
-                        input = sAux.split(" ", 3);
                         //Free page frames occupied by process X
                         int processID = Integer.parseInt(input[1]);
                         //Display Input
@@ -104,7 +99,7 @@ public class Main {
                         break;
                     }
                     case "C":
-                        //Split String again to avoid comments and unnecessary information
+                        //Split String again to display the comment
                         input = sAux.split(" ", 2);
                         //Display Input and comment
                         System.out.println("\nPetition: " + input[0] + "\nComment: " + input[1] + "\n");
@@ -137,7 +132,7 @@ public class Main {
             }
         } catch (FileNotFoundException | NumberFormatException e){
             //Print Error mesage
-            System.out.println("File with that name does not exist!");
+            //System.out.println("File with that name does not exist!");
         }
     }    
     /**
