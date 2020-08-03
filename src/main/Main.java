@@ -1,3 +1,9 @@
+/*
+Memory Managment Simulator
+ * @author 
+ * Jaime Hisao Yesaki Hinojosa      - A01720044
+ * Antonio Torres Carvajal          - A01561769          
+*/
 package main;
 
 import java.io.File;
