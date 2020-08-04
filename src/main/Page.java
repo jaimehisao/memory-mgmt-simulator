@@ -110,7 +110,7 @@ public class Page {
 
     /**
      * Get the page's reference bit
-     * @return 
+     * @return the reference bit of the page
      */
     public boolean isReferenceBit() {
         return referenceBit;
@@ -118,7 +118,7 @@ public class Page {
 
     /**
      * Set the page's number
-     * @param num 
+     * @param num the page number
      */
     public void setNum(int num) {
         this.num = num;

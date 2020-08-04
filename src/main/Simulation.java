@@ -72,7 +72,7 @@ public class Simulation {
         int pagesAssignedToProcess = 0;
         while(pagesRequired > pagesAssignedToProcess){
             Page page = new Page(pagesAssignedToProcess+1, process);
-            loadPageIntoMemory(process, page);
+            loadPageIntoMemory(page);
             process.addPageToPrimaryMemory(page); //Store information in PCB (associate to process)
             ++pagesAssignedToProcess;
         }
@@ -80,10 +80,9 @@ public class Simulation {
 
     /**
      * Assigns a page to memory
-     * @param process Process Object that owns the page
      * @param pageToAssign Page object that needs to be assigned into memory. Be it new or from Swap.
      */
-    private void loadPageIntoMemory(Process process, Page pageToAssign){
+    private void loadPageIntoMemory(Page pageToAssign){
         for (int i = 0; i < memory.length; i++){
             if(memory[i] == null){
                 ++systemTimestamp;
@@ -132,11 +131,13 @@ public class Simulation {
             }
         }
 
+        //If the process is null, meaning it does not exist
         if(processToDelete == null){
             System.out.println("Process does not exist! Try again.");
             return 0;
         }
 
+        //For each page the process has in Swap, delete it
         for (Page swapPage : processToDelete.pageIndexInSwap){
             for (int i = 0; i < swap.length; i++){
                 if(swapPage.equals(swap[i])){
@@ -147,6 +148,7 @@ public class Simulation {
             }
         }
 
+        //For each page the process has in Primary Memory, delete it
         for (Page page : processToDelete.pageIndexInPrimaryMemory){
             for (int i = 0; i < memory.length; i++){
                 if(page.equals(memory[i])){
@@ -177,7 +179,7 @@ public class Simulation {
             }
         }
 
-        //Process is non existent in {@code activeProcesses}
+        //Process is non existent activeProcesses
         if (ownerProcess == null){
             System.out.println("The referenced process does not exist, please try again!");
             return 0;
@@ -240,7 +242,7 @@ public class Simulation {
         for (Page page : swap) {
             //Making sure that it is the right page number and the right process. (Multiple processes can have an equal page number
             if (page != null && page.getNum() == requiredPageNumber && page.getProcess().getProcessId() == processID) {
-                loadPageIntoMemory(page.getProcess(), page);
+                loadPageIntoMemory(page);
                 swapsIn++;
             }
         }
@@ -251,9 +253,8 @@ public class Simulation {
     /**
      * Removes page from memory and saves it to Swap memory.
      * In accordance to the LRU replacement policy.
-     * @return the page in physical memory that was modified.
      */ 
-    private int swapUsingLRUPolicy(){
+    private void swapUsingLRUPolicy(){
         Page pageWithLeastRecentUsage = null;
         int lastUsage = Integer.MAX_VALUE;
         for (Page page : memory) {
@@ -264,22 +265,21 @@ public class Simulation {
         }
         //Case when no page has been modified, so we use FIFO to do the replacement
         if(pageWithLeastRecentUsage == null){
-            return swapUsingFIFOPolicy();
+            swapUsingFIFOPolicy();
+            return;
         }
         
         //Removes the page from memory and sends it over to swap memory.
         memory[pageWithLeastRecentUsage.getLocationInMemory()] = null; //May throw NullPointerException        
         sendToSwapMemory(pageWithLeastRecentUsage);
         ++pagesAvailable;
-        return pageWithLeastRecentUsage.getLocationInMemory(); //May throw NullPointerException
     }
 
     /**
      * Removes page from memory and saves it to Swap memory.
      * In accordance to the LRU replacement policy.
-     * @return the page in physical memory that was modified.
      */
-    private int swapUsingFIFOPolicy(){
+    private void swapUsingFIFOPolicy(){
         Page pageThatEnteredFirst = null;
         int firstEntryTimestamp = Integer.MAX_VALUE;
         for (Page page : memory) {
@@ -289,19 +289,11 @@ public class Simulation {
             }
         }
 
-        //Removes the page from memory and sends it over to swap memory.
+        //Removes the page from memory and sends it over to swap memory. Assert removes chance of exception
+        assert pageThatEnteredFirst != null;
         memory[pageThatEnteredFirst.getLocationInMemory()] = null;
         sendToSwapMemory(pageThatEnteredFirst);
         ++pagesAvailable;
-        return pageThatEnteredFirst.getLocationInMemory();
-    }
-
-
-
-    //not prod
-    public void viewSimulation(){
-        System.out.println("Pages: " + java.util.Arrays.toString(memory));
-        System.out.println("Swap: " + java.util.Arrays.toString(swap));
     }
 
     public int getSystemTimestamp() {

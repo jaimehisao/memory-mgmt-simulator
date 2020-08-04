@@ -6,27 +6,26 @@ public class Process {
 
     int processId;                              //Process ID
     int processSize;                            //Size in bytes
-    int timecreated;                            //Time created
-    Main main;                                  //Main object to access original simulation
+    int timeCreated;                            //Time created
     ArrayList<Page> pageIndexInPrimaryMemory;   //Stores the Page objects of where a process is located in Physical Mem
     ArrayList<Page> pageIndexInSwap;            //Stores the Page objects of where a process is located in Swap Memory.
 
     /**
      * Process Constructor
-     * @param processId
-     * @param processSize 
+     * @param processId process ID
+     * @param processSize process size in bytes
      */
     public Process(int processId, int processSize){
         this.processId = processId;
         this.processSize = processSize;
         this.pageIndexInPrimaryMemory = new ArrayList<>();
         this.pageIndexInSwap = new ArrayList<>();
-        this.timecreated = Main.getSimulation().getSystemTimestamp();
+        this.timeCreated = Main.getSimulation().getSystemTimestamp();
     }
 
     /**
      * Add page to swap index
-     * @param page 
+     * @param page page to add to {@code pageIndexInSwap}
      */
     public void addToSwapPageIndex(Page page){ 
         pageIndexInSwap.add(page); 
@@ -50,7 +49,7 @@ public class Process {
 
     /**
      * Remove page from memory
-     * @param page 
+     * @param page page to remove from {@code pageIndexInPrimaryMemory}
      */
     public void removePageFromPrimaryMemory(Page page){ 
         this.pageIndexInPrimaryMemory.remove(page); 
@@ -66,7 +65,7 @@ public class Process {
 
     /**
      * Set process ID
-     * @param processId 
+     * @param processId process ID (does not check for conflicts)
      */
     public void setProcessId(int processId) {
         this.processId = processId;
@@ -74,7 +73,7 @@ public class Process {
 
     /**
      * Set process size
-     * @param processSize 
+     * @param processSize process memory size in bytes
      */
     public void setProcessSize(int processSize) {
         this.processSize = processSize;
@@ -90,7 +89,7 @@ public class Process {
 
     /**
      * Set PageIndexInPrimaryMemory array
-     * @param pageIndexInPrimaryMemory 
+     * @param pageIndexInPrimaryMemory Array containing the indexes of the Pages in Primary Memory
      */
     public void setPageIndexInPrimaryMemory(ArrayList<Page> pageIndexInPrimaryMemory) {
         this.pageIndexInPrimaryMemory = pageIndexInPrimaryMemory;
@@ -98,7 +97,7 @@ public class Process {
 
     /**
      * Remove page from memory array
-     * @param index 
+     * @param index index of the page to be removed from the {@code pageIndexInPrimaryMemory}
      */
     public void removeProcessPageFromMemory(int index) {
         this.pageIndexInPrimaryMemory.remove(index);
@@ -106,7 +105,7 @@ public class Process {
 
     /**
      * Remove page from storage array
-     * @param page 
+     * @param page page to remove from {@code pageIndexInSwap}
      */
     public void removeFromSwapPageIndex(Page page){ 
         pageIndexInSwap.remove(page); 
@@ -122,7 +121,7 @@ public class Process {
 
     /**
      * set page index in storage
-     * @param pageIndexInSwap 
+     * @param pageIndexInSwap set the {@code pageIndexInSwap} Array.
      */
     public void setPageIndexInSwap(ArrayList<Page> pageIndexInSwap) {
         this.pageIndexInSwap = pageIndexInSwap;
@@ -133,6 +132,6 @@ public class Process {
      * @return timeCreated
      */
     public int getTimeCreated() {
-        return timecreated;
+        return timeCreated;
     }
 }

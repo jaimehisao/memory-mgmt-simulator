@@ -5,21 +5,20 @@ import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-/*
-Memory Managment Simulator
- * @author 
- * Jaime Hisao Yesaki Hinojosa      - A01720044
- * Antonio Torres Carvajal          - A01561769          
- * Karla Fabiola Ramírez Martínez   - A01746769
+/**
+Memory Management Simulator
+ * @author Jaime Hisao Yesaki Hinojosa      - A01720044
+ * @author Antonio Torres Carvajal          - A01561769
+ * @author Karla Fabiola Ramírez Martínez   - A01746769
+ * @version 1.0
 */
-
 public class Main {
     
     static Scanner scanner = new Scanner(System.in);        // Scanner for user input
     static Scanner fScanner;                                // Scanner for files
     static Simulation simulation;                           // Simulation object
     
-    public static void main(String args[]){
+    public static void main(String[] args){
         
         LinkedList<Process> PrList = new LinkedList<>();    // ArrayList to have registers of every process
         
