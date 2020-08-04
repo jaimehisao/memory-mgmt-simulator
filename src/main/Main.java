@@ -112,9 +112,9 @@ public class Main {
                         for(Process p : PrList){
                             System.out.println("Process: " + p.getProcessId() + 
                                     "\tTurnAround = " + (simulation.getSystemTimestamp() - 
-                                    p.getTimecreated()));
+                                    p.getTimeCreated()));
                             //Acumulate turnaround
-                            iAc += simulation.getSystemTimestamp() - p.getTimecreated();
+                            iAc += simulation.getSystemTimestamp() - p.getTimeCreated();
                         }
                         //Display general simulation stats
                         System.out.println("\nTurnAround Prom = " + 

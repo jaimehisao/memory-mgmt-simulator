@@ -132,7 +132,7 @@ public class Process {
      * Get time the process was created
      * @return timeCreated
      */
-    public int getTimecreated() {
+    public int getTimeCreated() {
         return timecreated;
     }
 }

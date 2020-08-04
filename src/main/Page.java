@@ -8,7 +8,6 @@ public class Page {
     int locationInSwap;         //Stores location in virtual memory
     int lastAppearance;         //Stores last Appearance
     int timeInserted;           //Stores time inserted
-    int timesUsed;              //Stores times used
     boolean referenceBit;       //Stores the reference bit
 
     //Constructor
@@ -18,13 +17,12 @@ public class Page {
         this.locationInSwap = 0;
         this.referenceBit = true;
         this.lastAppearance = 0;
-        this.timesUsed = 0;
         this.process = process;
     }
     
     /**
      * Set the page's location in storage
-     * @param locationInSwap 
+     * @param locationInSwap location of the Page in the Swap memory bank
      */
     public void setLocationInSwap(int locationInSwap) {
         this.locationInSwap = locationInSwap;
@@ -40,7 +38,7 @@ public class Page {
 
     /**
      * Set the page's time inserted
-     * @param timeInserted 
+     * @param timeInserted Time when the process was inserted into primary memory.
      */
     public void setTimeInserted(int timeInserted) {
         this.timeInserted = timeInserted;
@@ -56,7 +54,7 @@ public class Page {
 
     /**
      * Set the page's location in memory
-     * @param locationInMemory 
+     * @param locationInMemory location of the process in primary memory
      */
     public void setLocationInMemory(int locationInMemory) {
         this.locationInMemory = locationInMemory;
@@ -80,7 +78,7 @@ public class Page {
 
     /**
      * Set the page's reference bit
-     * @param referenceBit 
+     * @param referenceBit reference bit of the page
      */
     public void setReferenceBit(boolean referenceBit) {
         this.referenceBit = referenceBit;
@@ -104,26 +102,10 @@ public class Page {
 
     /**
      * Set the page's last appearance
-     * @param lastAppearance 
+     * @param lastAppearance last appearance of the page in primary memory
      */
     public void setLastAppearance(int lastAppearance) {
         this.lastAppearance = lastAppearance;
-    }
-
-    /**
-     * Get the page's times used
-     * @return timesUsed
-     */
-    public int getTimesUsed() {
-        return timesUsed;
-    }
-
-    /**
-     * set the page's times used
-     * @param timesUsed 
-     */
-    public void setTimesUsed(int timesUsed) {
-        this.timesUsed = timesUsed;
     }
 
     /**
