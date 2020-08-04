@@ -10,6 +10,7 @@ Memory Managment Simulator
  * @author 
  * Jaime Hisao Yesaki Hinojosa      - A01720044
  * Antonio Torres Carvajal          - A01561769          
+ * Karla Fabiola Ramírez Martínez   - A01746769
 */
 
 public class Main {
