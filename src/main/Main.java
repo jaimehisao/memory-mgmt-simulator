@@ -11,7 +11,7 @@ Memory Management Simulator
  * @author Antonio Torres Carvajal          - A01561769
  * @author Karla Fabiola Ramírez Martínez   - A01746769
  * @author josé Manuel Cruz Gil             - A01747740
- * @author Sofia Recinos Dorst              -A01657055
+ * @author Sofia Recinos Dorst              - A01657055
  * @version 1.0
 */
 public class Main {
